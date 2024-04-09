@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import GoodsModel, ImageModel
+from .models import GoodsModel, ImageModel, GroupOfGoods
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -16,3 +16,10 @@ class GoodsSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'description', 'category', 'type', 'official_price', 'retail_price', 'wholesale_price',
                   'large_wholesale_price', 'images')
 
+
+class GroupOfGoodsSerializer(serializers.ModelSerializer):
+    images = ImageSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = GroupOfGoods
+        fields = ('id', 'default_order', 'deleted', 'description', 'name', 'parent_id', 'updated', 'images')

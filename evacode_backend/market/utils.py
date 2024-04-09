@@ -188,10 +188,9 @@ class BusinessRuService:
     #                 image_object.save()
 
 
-b = BusinessRuService()
-b.group_to_model()
-b.goods_to_model()
 
-with open(r'file.json', "w", encoding='utf-8') as out:
-    mast_point = GoodsSerializer(GoodsModel.objects.all(), many=True).data
-    out.write(json.dumps(mast_point, ensure_ascii=False))
+
+# with open(r'file.json', "w", encoding='utf-8') as out:
+#     mast_point = GoodsSerializer(GoodsModel.objects.all(), many=True).data
+#     data = {'result': mast_point}
+#     out.write(json.dumps(data, ensure_ascii=False))
