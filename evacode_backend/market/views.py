@@ -1,23 +1,23 @@
 from django.shortcuts import render
 
+from .filters import GoodsFilter
+from django_filters import rest_framework as filters
 from .pagination import CustomPagination, AllObjectPagination
 from .utils import BusinessRuService, BusinessRuAPIClient
 from rest_framework import generics
+from rest_framework.viewsets import ModelViewSet
 from .models import GoodsModel, GroupOfGoods
 from .serializers import GoodsSerializer, GroupOfGoodsSerializer
 from django.http import HttpResponse, JsonResponse
+from django_filters.rest_framework import DjangoFilterBackend
 
 
-class GoodsListAPIView(generics.ListAPIView):
-    queryset = GoodsModel.objects.all()
+class GoodsAPIView(ModelViewSet):
+    queryset = GoodsModel.objects.all().distinct()
     serializer_class = GoodsSerializer
     pagination_class = CustomPagination
-
-
-class GoodDetailAPIView(generics.RetrieveAPIView):
-    queryset = GoodsModel.objects.all()
-    serializer_class = GoodsSerializer
-    lookup_field = 'id'
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = GoodsFilter
 
 
 class GroupListAPIView(generics.ListAPIView):

@@ -13,6 +13,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_filters',
     'core',
     'market',
     'ckeditor',
@@ -116,7 +118,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'  # <- добавьте путь к папке с медифайлами
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # и путь до нее
@@ -173,6 +174,9 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",
                                  'rest_framework.renderers.BrowsableAPIRenderer',),
     # "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    'DEFAULT_FILTER_BACKENDS': (
+       'django_filters.rest_framework.DjangoFilterBackend',
+        ),
 }
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -184,7 +188,7 @@ DATE_INPUT_FORMATS = [
     '%m.%d.%y',
     '%m:%d:%y %H:%M',
     '%m.%d.%y %H.%M',
-    '%m/%d/%y %H:%M',        # '10/25/06 14:30'
+    '%m/%d/%y %H:%M',  # '10/25/06 14:30'
     '%m/%d/%y %H.%M',
     '%m/%d/%y',
     '%d.%m.%Y %h:%m:%s'

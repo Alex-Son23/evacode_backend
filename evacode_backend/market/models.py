@@ -3,28 +3,28 @@ from django.db import models
 
 class GroupOfGoods(models.Model):
     default_order = models.CharField(max_length=128)
-    deleted = models.BooleanField()
-    description = models.TextField(blank=True, null=True)
+    deleted = models.BooleanField(verbose_name='Крупный опт')
+    description = models.TextField(blank=True, null=True, verbose_name='Описание')
     name = models.CharField(verbose_name="Наименование группы", max_length=128)
     parent_id = models.ForeignKey('self', on_delete=models.CASCADE, related_name='children', blank=True, null=True)
-    updated = models.DateTimeField()
+    updated = models.DateTimeField(verbose_name='Обновлено')
 
 
 class GoodsModel(models.Model):
-    title = models.CharField(max_length=256)
-    description = models.TextField(blank=True, null=True)
-    category = models.ForeignKey(GroupOfGoods, on_delete=models.CASCADE, related_name='group')
-    type = models.CharField(max_length=128)
+    title = models.CharField(max_length=256, verbose_name='Название')
+    description = models.TextField(blank=True, null=True, verbose_name='Описание')
+    category = models.ForeignKey(GroupOfGoods, on_delete=models.CASCADE, related_name='group', verbose_name='Категория')
+    type = models.CharField(max_length=128, verbose_name='Тип')
 
-    official_price = models.PositiveIntegerField(blank=True, null=True)
-    retail_price = models.PositiveIntegerField(blank=True, null=True)
-    wholesale_price = models.PositiveIntegerField(blank=True, null=True)
-    large_wholesale_price = models.PositiveIntegerField(blank=True, null=True)
+    official_price = models.PositiveIntegerField(blank=True, null=True, verbose_name='Официальная цена')
+    retail_price = models.PositiveIntegerField(blank=True, null=True, verbose_name='Розничная цена')
+    wholesale_price = models.PositiveIntegerField(blank=True, null=True, verbose_name='Оптовая цена')
+    large_wholesale_price = models.PositiveIntegerField(blank=True, null=True, verbose_name='Крупный опт')
 
 
 class ImageModel(models.Model):
-    group = models.ForeignKey(GroupOfGoods, on_delete=models.CASCADE, related_name='images', blank=True, null=True)
-    good = models.ForeignKey(GoodsModel, on_delete=models.CASCADE, related_name='images', blank=True, null=True)
+    group = models.ForeignKey(GroupOfGoods, on_delete=models.CASCADE, related_name='images', blank=True, null=True, verbose_name='Группа')
+    good = models.ForeignKey(GoodsModel, on_delete=models.CASCADE, related_name='images', blank=True, null=True, verbose_name='Товар')
     name = models.CharField(verbose_name="Название", max_length=128)
-    sort = models.IntegerField(null=True, blank=True)
-    url = models.TextField()
+    sort = models.IntegerField(null=True, blank=True, verbose_name='Sort')
+    url = models.TextField(verbose_name='URL')

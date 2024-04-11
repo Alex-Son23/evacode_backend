@@ -2,12 +2,15 @@ from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework.routers import DefaultRouter
+from .views import update_data, get_all_goods, GroupListAPIView, GoodsAPIView
 
-from .views import GoodsListAPIView, GoodDetailAPIView, update_data, get_all_goods, GroupListAPIView
+
+router = DefaultRouter()
+router.register('goods', GoodsAPIView, basename='good')
 
 urlpatterns = [
-    path('goods/', GoodsListAPIView.as_view(), name='goods-list'),
-    path('goods/<int:id>/', GoodDetailAPIView.as_view(), name='product-detail'),
+    path("", include(router.urls)),
     path('categories/', GroupListAPIView.as_view()),
     path('update_data/', update_data),
     path('get_all_goods/', get_all_goods)
