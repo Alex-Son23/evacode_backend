@@ -13,5 +13,5 @@ urlpatterns = [
     path('categories/', GroupListAPIView.as_view()),
     path('update_data/', update_data),
     path('get_all_goods/', get_all_goods),
-    path('basket/', Checkout.as_view())
+    path('checkout/', Checkout.as_view())
 ]
