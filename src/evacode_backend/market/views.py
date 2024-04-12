@@ -68,9 +68,9 @@ class Checkout(View):
                     for good in data['basket']:
                         message_text += f'{good["title"]} - {good["count"]}шт - {good["price"]}₩\n'
                     message_text += f'{data["first_name"]} {data["second_name"]}\n' \
-                                    f'email - {data["email"]}\n' \
-                                    f'inst - {data["inst"]}\n' \
-                                    f'city - {data["city"]}\n' \
+                                    f'Электронная почта - {data["email"]}\n' \
+                                    f'Инстаграм - {data["inst"]}\n' \
+                                    f'Город - {data["city"]}\n' \
                                     f'Тип клиента - {data["client_type"]}\n' \
                                     f'{data["phone"]} - @{data["telegram_nickname"]}'
 
