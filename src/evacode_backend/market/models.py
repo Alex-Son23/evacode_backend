@@ -15,6 +15,7 @@ class GoodsModel(models.Model):
     description = models.TextField(blank=True, null=True, verbose_name='Описание')
     category = models.ForeignKey(GroupOfGoods, on_delete=models.CASCADE, related_name='group', verbose_name='Категория')
     type = models.CharField(max_length=128, verbose_name='Тип')
+    stock = models.PositiveIntegerField(blank=True, null=True, verbose_name='Остатки')
 
     official_price = models.PositiveIntegerField(blank=True, null=True, verbose_name='Официальная цена')
     retail_price = models.PositiveIntegerField(blank=True, null=True, verbose_name='Розничная цена')

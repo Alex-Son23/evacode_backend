@@ -135,7 +135,9 @@ class BusinessRuService:
                     'description': good['description'],
                     'category_id': good['group_id'],
                     'type': good['type'],
+                    'stock': float(good['remains'][0]['amount']['total'])
                 }
+                print(good['id'], float(good['remains'][0]['amount']['total']))
 
                 for price in good['prices']:
                     match price['price_type']['name']:
@@ -171,6 +173,11 @@ class BusinessRuService:
                 # except:
                 #     pass
             page += 1
+            goods_to_delete = GoodsModel.objects.filter(stock__isnull=True) | GoodsModel.objects.filter(stock=0)
+
+            # Удаляем найденные объекты
+            pprint(goods_to_delete)
+            goods_to_delete.delete()
 
     # def add_images(self, images: list, type_of_model: str) -> None:
     #
