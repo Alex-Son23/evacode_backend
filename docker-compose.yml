@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  db:
+    container_name: evacode-db
+    image: postgres:latest
+    restart: always
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  server:
+    container_name: evacode-api
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile
+    command: sh -c "python manage.py migrate && python manage.py collectstatic --noinput && python manage.py createsuperuser --noinput & gunicorn settings.wsgi:application --bind 0.0.0.0:8000"
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - .env
+    volumes:
+      - static:/www/data/static
+      - media:/www/data/media
+  nginx:
+    container_name: evacode-nginx
+    build: ./dockerfiles/nginx
+    ports:
+      - 80:80
+    depends_on:
+      - server
+    volumes:
+      - static:/www/data/static
+      - media:/www/data/media
+volumes:
+  pgdata:
+    name: evacode-pgdata
+  static:
+    name: evacode-static
+  media:
+    name: evacode-media

@@ -1,15 +1,6 @@
-Команда для установки poetry
-curl -sSL https://install.python-poetry.org | python3 -
+Для запуска требуется выполнить команду:
+docker compose -f docker-compose.dev.yml up --build -d
 
-Далее создаем виртуальное окружение:
-poetry install
-
-Активируем окружение:
-poetry shell
-
-Запускаем django проект:
-python manage.py migrate
-python manage.py runserver
-
-Пока что для получения данных нужно делать get-запрос на endpoint:
-127.0.0.1:8000/market/update_data
+Если не сработало:
+docker ps -a
+docker stop <id контейнеров которые используют порт 5432 через пробел>
