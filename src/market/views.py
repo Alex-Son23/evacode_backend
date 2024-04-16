@@ -1,5 +1,6 @@
 import asyncio
 import json
+from pprint import pprint
 
 import requests
 from asgiref.sync import async_to_sync
@@ -58,21 +59,22 @@ class Checkout(View):
         if request.content_type == 'application/json':
             try:
                 data = json.loads(request.body)
-                print(data)
+                pprint(data)
 
                 message_text = 'ЗАКАЗ С САЙТА:\n'
                 if data['consult']:
-                    message_text += f"Консультация - @{data['telegram_nickname']}"
+                    message_text += f"Консультация - @{data['user']['telegram']}"
                     n = async_to_sync(bot.send_message)(chat_id=chat_id, text=message_text, reply_markup=keyboard)
                 else:
-                    for good in data['basket']:
-                        message_text += f'{good["title"]} - {good["count"]}шт - {good["price"]}₩\n'
-                    message_text += f'{data["first_name"]} {data["second_name"]}\n' \
-                                    f'Электронная почта - {data["email"]}\n' \
-                                    f'Инстаграм - {data["inst"]}\n' \
-                                    f'Город - {data["city"]}\n' \
-                                    f'Тип клиента - {data["client_type"]}\n' \
-                                    f'{data["phone"]} - @{data["telegram_nickname"]}'
+                    for good in data['cart']:
+                        message_text += f'{good["title"]} - {good["quantity"]}шт - {good["retail_price"]}₩\n'
+                    payment_type = 'ФизЛицо' if data['paymentType'] == "individual" else 'ЮрЛицо'
+                    message_text += f'{data["user"]["firstName"]} {data["user"]["lastName"]}\n' \
+                                    f'Электронная почта - {data["user"]["email"]}\n' \
+                                    f'Инстаграм - {data["user"]["instagram"]}\n' \
+                                    f'Город - {data["user"]["city"]}\n' \
+                                    f'Тип клиента - {payment_type}\n' \
+                                    f'{data["user"]["phone"]} - @{data["user"]["telegram"]}'
 
                     n = async_to_sync(bot.send_message)(chat_id=chat_id, text=message_text, reply_markup=keyboard)
                 return JsonResponse({'message': 'DONE!'}, status=200)

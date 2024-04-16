@@ -34,4 +34,6 @@ class Comment(models.Model):
         return self.text
 
 
-# class Text
+class Banner(models.Model):
+    name = models.CharField(verbose_name="Название", max_length=128)
+    image = models.ImageField(upload_to="images/")
