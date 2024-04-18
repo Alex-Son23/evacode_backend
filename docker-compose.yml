@@ -4,9 +4,9 @@ services:
   db:
     container_name: evacode-db
     image: postgres:latest
-    restart: always
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
+    restart: always
     ports:
       - 5432:5432
     env_file:
@@ -40,7 +40,7 @@ services:
     depends_on:
       - server
     env_file:
-      - .env
+      - .env2
     volumes:
       - static:/www/data/static
       - media:/www/data/media
