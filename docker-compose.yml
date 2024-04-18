@@ -15,6 +15,7 @@ services:
     container_name: evacode-api
     build:
       context: .
+      network: host
       dockerfile: dockerfiles/Dockerfile
     command: sh -c "python manage.py migrate && python manage.py collectstatic --noinput && python manage.py createsuperuser --noinput & gunicorn evacode_backend.wsgi:application --bind 0.0.0.0:8000"
     restart: always
@@ -29,6 +30,7 @@ services:
     container_name: update_database
     build:
       context: .
+      network: host
       dockerfile: dockerfiles/Dockerfile
     command: python manage.py updatedata
     restart: always
