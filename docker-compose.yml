@@ -25,6 +25,20 @@ services:
     volumes:
       - static:/www/data/static
       - media:/www/data/media
+  update_database:
+    container_name: update_database
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile
+    command: python manage.py updatedata
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - .env
+    volumes:
+      - static:/www/data/static
+      - media:/www/data/media
   nginx:
     container_name: evacode-nginx
     build: ./dockerfiles/nginx

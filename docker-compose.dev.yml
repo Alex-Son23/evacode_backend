@@ -26,3 +26,19 @@ services:
       - .:/evacode
     env_file:
       - .env
+  update_database:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.dev
+    command: python manage.py updatedata
+    restart: always
+    volumes:
+      - .:/evacode
+    env_file:
+      - .env
+#    depends_on:
+#      - db
+#    volumes:
+#      - .:/evacode
+#    env_file:
+#      - .env

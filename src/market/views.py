@@ -69,12 +69,13 @@ class Checkout(View):
                     for good in data['cart']:
                         message_text += f'{good["title"]} - {good["quantity"]}шт - {good["retail_price"]}₩\n'
                     payment_type = 'ФизЛицо' if data['paymentType'] == "individual" else 'ЮрЛицо'
-                    message_text += f'{data["user"]["firstName"]} {data["user"]["lastName"]}\n' \
+                    message_text += f'ФИО: {data["user"]["firstName"]} {data["user"]["lastName"]}\n' \
                                     f'Электронная почта - {data["user"]["email"]}\n' \
                                     f'Инстаграм - {data["user"]["instagram"]}\n' \
                                     f'Город - {data["user"]["city"]}\n' \
                                     f'Тип клиента - {payment_type}\n' \
-                                    f'{data["user"]["phone"]} - @{data["user"]["telegram"]}'
+                                    f'Номер: {data["user"]["phone"]}\n' \
+                                    f'Телеграм: @{data["user"]["telegram"]}'
 
                     n = async_to_sync(bot.send_message)(chat_id=chat_id, text=message_text, reply_markup=keyboard)
                 return JsonResponse({'message': 'DONE!'}, status=200)
