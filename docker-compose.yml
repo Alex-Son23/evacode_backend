@@ -35,7 +35,7 @@ services:
       context: .
       network: host
       dockerfile: dockerfiles/Dockerfile
-    command: sh -c "python manage.py migrate && python manage.py updatedata"
+    command: sh -c "python manage.py updatedata"
     restart: always
     depends_on:
       - server
