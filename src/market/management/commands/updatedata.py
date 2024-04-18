@@ -9,7 +9,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         print("Script started succesfuly!")
         service = BusinessRuService()
-        requests.get('google.com')
         while True:
             service.api_client.set_token()
             service.group_to_model()
