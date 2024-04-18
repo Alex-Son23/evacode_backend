@@ -3,7 +3,6 @@
 __pycache__
 media
 .env
-.env2
 db.sqlite3
 .DS_STORE
 .env2
