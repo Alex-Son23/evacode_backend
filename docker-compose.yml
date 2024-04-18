@@ -56,6 +56,8 @@ services:
       - media:/www/data/media
   frontend:
     build: evacode.org
+    depends_on:
+      - nginx
 volumes:
   pgdata:
     name: evacode-pgdata

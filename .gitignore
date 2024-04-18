@@ -5,3 +5,4 @@ media
 .env
 db.sqlite3
 .DS_STORE
+.env2

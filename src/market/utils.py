@@ -126,9 +126,6 @@ class BusinessRuService:
             if not goods_data:
                 break
             for good in goods_data:
-                # try:
-                if good['id'] == '76142':
-                    pprint(good)
                 defaults = {
                     'id': good['id'],
                     'title': good['full_name'],
@@ -137,7 +134,7 @@ class BusinessRuService:
                     'type': good['type'],
                     'stock': float(good['remains'][0]['amount']['total'])
                 }
-                print(good['id'], float(good['remains'][0]['amount']['total']))
+                # print(good['id'], float(good['remains'][0]['amount']['total']))
 
                 for price in good['prices']:
                     match price['price_type']['name']:
@@ -176,7 +173,7 @@ class BusinessRuService:
             goods_to_delete = GoodsModel.objects.filter(stock__isnull=True) | GoodsModel.objects.filter(stock=0)
 
             # Удаляем найденные объекты
-            pprint(goods_to_delete)
+            # pprint(goods_to_delete)
             goods_to_delete.delete()
 
     # def add_images(self, images: list, type_of_model: str) -> None:
