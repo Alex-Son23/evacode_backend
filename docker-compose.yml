@@ -28,6 +28,7 @@ services:
       - media:/www/data/media
   update_database:
     container_name: update_database
+    network_mode: "host"
     build:
       context: .
       network: host
