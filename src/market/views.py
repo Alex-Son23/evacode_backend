@@ -86,6 +86,8 @@ class Checkout(View):
 
 
 def update_data(request):
+    print("TESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTEST\n"
+          "TESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTEST")
     b = BusinessRuService()
     b.group_to_model()
     b.goods_to_model()

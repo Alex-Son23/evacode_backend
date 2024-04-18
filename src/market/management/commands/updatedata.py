@@ -5,8 +5,8 @@ from market.utils import BusinessRuService
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        service = BusinessRuService()
         print("Script started succesfuly!")
+        service = BusinessRuService()
         while True:
             service.api_client.set_token()
             service.group_to_model()
