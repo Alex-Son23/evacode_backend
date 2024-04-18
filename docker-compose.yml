@@ -32,7 +32,7 @@ services:
       context: .
       network: host
       dockerfile: dockerfiles/Dockerfile
-    command: python manage.py updatedata
+    command: sh -c "python manage.py updatedata"
     restart: always
     depends_on:
       - db
