@@ -1,9 +1,9 @@
 from rest_framework import serializers
-from .models import Post
+from .models import Post, Slide
 from taggit.serializers import TagListSerializerField, TaggitSerializer
 from django.contrib.auth.models import User
 from taggit.models import Tag
-from .models import Comment
+from .models import Comment, Banner, AboutUs, Contacts, Delivery
 
 
 class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
@@ -79,4 +79,31 @@ class CommentSerializer(serializers.ModelSerializer):
         }
 
 
-# class 
+class BannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Banner
+        fields = '__all__'
+
+
+class AboutUsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AboutUs
+        fields = '__all__'
+
+
+class DeliverySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Delivery
+        fields = '__all__'
+
+
+class ContactsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contacts
+        fields = '__all__'
+
+
+class SlideSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Slide
+        fields = '__all__'

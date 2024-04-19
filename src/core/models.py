@@ -37,3 +37,29 @@ class Comment(models.Model):
 class Banner(models.Model):
     name = models.CharField(verbose_name="Название", max_length=128)
     image = models.ImageField(upload_to="images/")
+
+
+class AboutUs(models.Model):
+    image = models.ImageField(verbose_name="Картинка", upload_to="images/")
+    title = models.CharField(verbose_name="Название", max_length=128)
+    description = RichTextUploadingField()
+
+
+class Delivery(models.Model):
+    delivery_type = models.CharField(verbose_name="Тип доставки")
+    delivery_description = RichTextUploadingField()
+
+
+class Slide(models.Model):
+    image = models.ImageField(verbose_name="Картинка", upload_to="images/")
+    title = models.CharField(verbose_name="Название", max_length=128)
+    description = RichTextUploadingField()
+
+
+class Contacts(models.Model):
+    telegram = models.CharField(verbose_name="Telegram", max_length=128)
+    instagram = models.CharField(verbose_name="Instagram", max_length=128)
+    facebook = models.CharField(verbose_name="Facebook", max_length=128)
+    address = models.CharField(verbose_name="Address", max_length=128)
+    phone = models.CharField(verbose_name="Phone", max_length=128)
+    email = models.CharField(verbose_name="Email", max_length=128)

@@ -1,6 +1,8 @@
 from rest_framework import viewsets, permissions, pagination, generics, filters
-from .serializers import PostSerializer
-from .models import Post
+from rest_framework.viewsets import ModelViewSet
+
+from .serializers import PostSerializer, ContactsSerializer, AboutUsSerializer, DeliverySerializer, SlideSerializer
+from .models import Post, Slide
 from rest_framework.response import Response
 from taggit.models import Tag
 from .serializers import TagSerializer, ContactSerailizer
@@ -8,7 +10,7 @@ from taggit.models import Tag
 from rest_framework.views import APIView
 from django.core.mail import send_mail
 from .serializers import RegisterSerializer, UserSerializer, CommentSerializer
-from .models import Comment
+from .models import Comment, Contacts, AboutUs, Banner, Delivery
 
 
 class PageNumberSetPagination(pagination.PageNumberPagination):
@@ -107,3 +109,28 @@ class CommentView(generics.ListCreateAPIView):
         post_slug = self.kwargs['post_slug'].lower()
         post = Post.objects.get(slug=post_slug)
         return Comment.objects.filter(post=post)
+
+
+class BannerView(ModelViewSet):
+    queryset = Banner.objects.all()
+    serializer_class = CommentSerializer
+
+
+class ContactsView(ModelViewSet):
+    queryset = Contacts.objects.all()
+    serializer_class = ContactsSerializer
+
+
+class AboutUsView(ModelViewSet):
+    queryset = AboutUs.objects.all()
+    serializer_class = AboutUsSerializer
+
+
+class DeliveryView(ModelViewSet):
+    queryset = Delivery.objects.all()
+    serializer_class = DeliverySerializer
+
+
+class SlideView(ModelViewSet):
+    queryset = Slide.objects.all()
+    serializer_class = SlideSerializer
