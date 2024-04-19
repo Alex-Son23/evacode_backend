@@ -258,3 +258,7 @@ DATE_INPUT_FORMATS = [
     "%m/%d/%y",
     "%d.%m.%Y %h:%m:%s",
 ]
+
+
+DJANGO_STATIC_ROOT = os.getenv('DJANGO_STATIC_ROOT')
+DJANGO_MEDIA_ROOT = os.getenv('DJANGO_MEDIA_ROOT')
