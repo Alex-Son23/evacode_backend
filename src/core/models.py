@@ -35,11 +35,13 @@ class Comment(models.Model):
 
 
 class Banner(models.Model):
-    name = models.CharField(verbose_name="Название", max_length=128)
+    name = models.CharField(verbose_name="Поле для поиска", max_length=128)
+    title = models.CharField(verbose_name="Название", max_length=128)
     image = models.ImageField(upload_to="images/")
 
 
 class AboutUs(models.Model):
+    name = models.CharField(verbose_name="Поле для поиска", max_length=128)
     image = models.ImageField(verbose_name="Картинка", upload_to="images/")
     title = models.CharField(verbose_name="Название", max_length=128)
     description = RichTextUploadingField()

@@ -1,7 +1,8 @@
 from rest_framework import viewsets, permissions, pagination, generics, filters
 from rest_framework.viewsets import ModelViewSet
+from django_filters import rest_framework
 
-from .serializers import PostSerializer, ContactsSerializer, AboutUsSerializer, DeliverySerializer, SlideSerializer
+from .serializers import PostSerializer, ContactsSerializer, AboutUsSerializer, DeliverySerializer, SlideSerializer, BannerSerializer
 from .models import Post, Slide
 from rest_framework.response import Response
 from taggit.models import Tag
@@ -11,6 +12,23 @@ from rest_framework.views import APIView
 from django.core.mail import send_mail
 from .serializers import RegisterSerializer, UserSerializer, CommentSerializer
 from .models import Comment, Contacts, AboutUs, Banner, Delivery
+from django_filters import FilterSet, CharFilter
+
+
+class BannerFilter(FilterSet):
+    name = CharFilter(field_name='name', lookup_expr='exact', required=False)
+
+    class Meta:
+        model = Banner
+        fields = ['id', 'name']
+
+
+class AboutFilter(FilterSet):
+    name = CharFilter(field_name='name', lookup_expr='exact', required=False)
+
+    class Meta:
+        model = AboutUs
+        fields = ['id', 'name']
 
 
 class PageNumberSetPagination(pagination.PageNumberPagination):
@@ -113,7 +131,9 @@ class CommentView(generics.ListCreateAPIView):
 
 class BannerView(ModelViewSet):
     queryset = Banner.objects.all()
-    serializer_class = CommentSerializer
+    serializer_class = BannerSerializer
+    filter_backends = (rest_framework.DjangoFilterBackend,)
+    filterset_class = BannerFilter
 
 
 class ContactsView(ModelViewSet):
@@ -124,6 +144,8 @@ class ContactsView(ModelViewSet):
 class AboutUsView(ModelViewSet):
     queryset = AboutUs.objects.all()
     serializer_class = AboutUsSerializer
+    filter_backends = (rest_framework.DjangoFilterBackend,)
+    filterset_class = AboutFilter
 
 
 class DeliveryView(ModelViewSet):
