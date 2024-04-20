@@ -262,6 +262,7 @@ DATE_INPUT_FORMATS = [
 DJANGO_MEDIA_ROOT = os.getenv('DJANGO_MEDIA_ROOT')
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://www.evacode.org",
     "https://evacode.org",
     "https://79.174.95.27"
 ]
