@@ -153,7 +153,7 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_URL = "/media/"  # <- добавьте путь к папке с медифайлами
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")  # и путь до нее
+MEDIA_ROOT = os.getenv('DJANGO_MEDIA_ROOT')  # и путь до нее
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
