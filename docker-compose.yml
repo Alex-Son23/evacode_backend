@@ -48,12 +48,14 @@ services:
     container_name: evacode-nginx
     build: ./dockerfiles/nginx
     ports:
-      - 80:80
+      - 443:443
     depends_on:
       - server
     volumes:
       - static:/www/data/static
       - media:/www/data/media
+      - ./dockerfiles/nginx/www.evacode.org.crt:/etc/ssl/private/www.evacode.org.crt
+      - ./dockerfiles/nginx/www.evacode.org.key:/etc/ssl/private/www.evacode.org.key
   frontend:
     build: evacode.org
     depends_on:
