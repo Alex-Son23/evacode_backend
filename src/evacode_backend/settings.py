@@ -104,7 +104,6 @@ WSGI_APPLICATION = "evacode_backend.wsgi.application"
 
 DB_TYPE = os.getenv("DB_TYPE", "sqlite")
 
-
 DATABASES = {
     "default": (
         {
@@ -259,6 +258,10 @@ DATE_INPUT_FORMATS = [
     "%d.%m.%Y %h:%m:%s",
 ]
 
-
 DJANGO_STATIC_ROOT = os.getenv('DJANGO_STATIC_ROOT')
 DJANGO_MEDIA_ROOT = os.getenv('DJANGO_MEDIA_ROOT')
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://evacode.org",
+    "https://79.174.95.27/"
+]
