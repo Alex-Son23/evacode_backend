@@ -43,7 +43,7 @@ services:
 #    env_file:
 #      - .env
   nginx:
-#    container_name: evacode-nginx
+    container_name: evacode-nginx-dev
     build:
       context: dockerfiles/nginx
       dockerfile: Dockerfile.dev
@@ -52,12 +52,6 @@ services:
     volumes:
       - static:/www/data/static
       - media:/www/data/media
-    depends_on:
-      - frontend
-  frontend:
-    build:
-      context: evacode.org
-      dockerfile: Dockerfile.dev
     depends_on:
       - server
 volumes:
