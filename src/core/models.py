@@ -39,6 +39,10 @@ class Banner(models.Model):
     title = models.CharField(verbose_name="Название", max_length=128)
     image = models.ImageField(upload_to="images/")
 
+    class Meta:
+        verbose_name = 'Баннер'
+        verbose_name_plural = 'Баннеры'
+
 
 class AboutUs(models.Model):
     name = models.CharField(verbose_name="Поле для поиска", max_length=128)
@@ -46,16 +50,28 @@ class AboutUs(models.Model):
     title = models.CharField(verbose_name="Название", max_length=128)
     description = RichTextUploadingField()
 
+    class Meta:
+        verbose_name = 'О нас'
+        verbose_name_plural = 'О нас'
+
 
 class Delivery(models.Model):
     delivery_type = models.CharField(verbose_name="Тип доставки")
     delivery_description = RichTextUploadingField()
+
+    class Meta:
+        verbose_name = 'Доставка'
+        verbose_name_plural = 'Доставка'
 
 
 class Slide(models.Model):
     image = models.ImageField(verbose_name="Картинка", upload_to="images/")
     title = models.CharField(verbose_name="Название", max_length=128)
     description = RichTextUploadingField()
+
+    class Meta:
+        verbose_name = 'Слайд'
+        verbose_name_plural = 'Слайды'
 
 
 class Contacts(models.Model):
@@ -65,3 +81,7 @@ class Contacts(models.Model):
     address = models.CharField(verbose_name="Address", max_length=128)
     phone = models.CharField(verbose_name="Phone", max_length=128)
     email = models.CharField(verbose_name="Email", max_length=128)
+
+    class Meta:
+        verbose_name = 'Контакт'
+        verbose_name_plural = 'Контакты'
