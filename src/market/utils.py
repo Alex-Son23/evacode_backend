@@ -175,6 +175,7 @@ class BusinessRuService:
             # Удаляем найденные объекты
             # pprint(goods_to_delete)
             goods_to_delete.delete()
+        print("Goods added successfully!")
 
     # def add_images(self, images: list, type_of_model: str) -> None:
     #
