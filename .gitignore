@@ -6,3 +6,4 @@ media
 db.sqlite3
 .DS_STORE
 .env2
+debug.log

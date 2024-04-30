@@ -30,6 +30,32 @@ ALLOWED_HOSTS = [
     "*",
 ]
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.FileHandler",
+            "formatter": "verbose",
+            "filename": "debug.log",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+}
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost",
     "http://localhost:3000",
@@ -258,7 +284,6 @@ DATE_INPUT_FORMATS = [
     "%m/%d/%y",
     "%d.%m.%Y %h:%m:%s",
 ]
-
 
 DJANGO_MEDIA_ROOT = os.getenv('DJANGO_MEDIA_ROOT')
 
