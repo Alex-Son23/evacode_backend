@@ -94,7 +94,18 @@ INSTALLED_APPS = [
     "ckeditor",
     "ckeditor_uploader",
     "taggit",
+    'drf_yasg',
 ]
+
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Basic': {
+            'type': 'basic'
+        }
+    }
+}
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
