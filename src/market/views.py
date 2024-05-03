@@ -63,7 +63,7 @@ class Checkout(View):
 
                 message_text = 'ЗАКАЗ С САЙТА:\n'
                 if data['consult']:
-                    message_text += f"Консультация - @{data['user']['telegram']}"
+                    message_text += f"Консультация - @{data['user']['phone']}"
                     n = async_to_sync(bot.send_message)(chat_id=chat_id, text=message_text, reply_markup=keyboard)
                 else:
                     for good in data['cart']:
