@@ -56,7 +56,7 @@ class AboutUs(models.Model):
 
 
 class Delivery(models.Model):
-    delivery_type = models.CharField(verbose_name="Тип доставки")
+    delivery_type = models.CharField(verbose_name="Тип доставки", max_length=128)
     delivery_description = RichTextUploadingField()
 
     class Meta:
