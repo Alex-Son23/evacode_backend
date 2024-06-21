@@ -2,8 +2,8 @@ from rest_framework import viewsets, permissions, pagination, generics, filters
 from rest_framework.viewsets import ModelViewSet
 from django_filters import rest_framework
 
-from .serializers import PostSerializer, ContactsSerializer, AboutUsSerializer, DeliverySerializer, SlideSerializer, BannerSerializer
-from .models import Post, Slide
+from .serializers import PostSerializer, ContactsSerializer, AboutUsSerializer, DeliverySerializer, SlideSerializer, BannerSerializer, ReviewSerializer
+from .models import Post, Slide, Review
 from rest_framework.response import Response
 from taggit.models import Tag
 from .serializers import TagSerializer, ContactSerailizer
@@ -156,3 +156,8 @@ class DeliveryView(ModelViewSet):
 class SlideView(ModelViewSet):
     queryset = Slide.objects.all()
     serializer_class = SlideSerializer
+
+
+class ReviewView(ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer

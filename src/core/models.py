@@ -4,6 +4,7 @@ from django.utils import timezone
 from ckeditor_uploader.fields import RichTextUploadingField
 from taggit.managers import TaggableManager
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class Post(models.Model):
@@ -85,3 +86,16 @@ class Contacts(models.Model):
     class Meta:
         verbose_name = 'Контакт'
         verbose_name_plural = 'Контакты'
+
+
+class Review(models.Model):
+    avatar = models.ImageField(verbose_name="Аватар", upload_to="images/reviews/avatars/")
+    name = models.CharField(verbose_name="ФИО", max_length=128)
+    rating = models.IntegerField(verbose_name="Рейтинг", validators=[MaxValueValidator(5), MinValueValidator(0)])
+    text = models.TextField(verbose_name="Текст отзыва")
+    country = models.CharField(verbose_name="Страна", max_length=128)
+    review_photo = models.ImageField(verbose_name="Фото", upload_to="images/reviews/photos/")
+
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'

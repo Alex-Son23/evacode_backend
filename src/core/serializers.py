@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post, Slide
+from .models import Post, Slide, Review
 from taggit.serializers import TagListSerializerField, TaggitSerializer
 from django.contrib.auth.models import User
 from taggit.models import Tag
@@ -106,4 +106,10 @@ class ContactsSerializer(serializers.ModelSerializer):
 class SlideSerializer(serializers.ModelSerializer):
     class Meta:
         model = Slide
+        fields = '__all__'
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
         fields = '__all__'
