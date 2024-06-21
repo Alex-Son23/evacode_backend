@@ -58,7 +58,7 @@ class ReviewAdmin(admin.ModelAdmin):
         return mark_safe(f'<img src={obj.review_photo.url} width="200">')
 
     get_avatar.short_description = "Аватар"
-    get_photo.short_description = "Аватар"
+    get_photo.short_description = "Фото отзыва"
 
 
 admin.site.register(Delivery, DeliveryAdmin)
