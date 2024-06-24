@@ -323,6 +323,20 @@ files = [
 ]
 
 [[package]]
+name = "dbf-light"
+version = "1.0.0"
+description = "Light and easy DBF reader"
+optional = false
+python-versions = "*"
+files = [
+    {file = "dbf_light-1.0.0-py2.py3-none-any.whl", hash = "sha256:b4ec7552c6738d10102e9c8ecc180e7a5d4c8a02e85673194f49503298d130b5"},
+    {file = "dbf_light-1.0.0.tar.gz", hash = "sha256:1e06ff6d7627c2ccce3a1c1761576a732dd607edd2c5f5eb1e564a8ed1489698"},
+]
+
+[package.extras]
+cli = ["click"]
+
+[[package]]
 name = "django"
 version = "5.0.4"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
@@ -980,6 +994,25 @@ tests = ["pytest (>=2.3.0)", "tox (>=1.6.0)"]
 type-tests = ["mypy (>=0.812)", "pytest (>=2.3.0)", "pytest-mypy-plugins"]
 
 [[package]]
+name = "pycbrf"
+version = "1.1.0"
+description = "Tools to query Bank of Russia"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pycbrf-1.1.0-py2-none-any.whl", hash = "sha256:3b74c086dd034c8bfd9cde314a8c87c2f04659adabdd810c39f3990b7bf52700"},
+    {file = "pycbrf-1.1.0-py3-none-any.whl", hash = "sha256:0aca6e7f363a1188a8edb2df57e526cf9f782df2b152e8691bac264fc9bb3b00"},
+    {file = "pycbrf-1.1.0.tar.gz", hash = "sha256:5aa83e886e9f0fcf7c4aff1fd463d130e076800e268386a9797f66308244bebd"},
+]
+
+[package.dependencies]
+dbf-light = ">=0.3.0"
+requests = "*"
+
+[package.extras]
+cli = ["click"]
+
+[[package]]
 name = "pyjwt"
 version = "2.8.0"
 description = "JSON Web Token implementation in Python"
@@ -1381,4 +1414,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.3"
-content-hash = "75c44db9b6a89f854bc55ba471e883a109a66ff33acc9b0234fa5c2f2b98d6f3"
+content-hash = "e3283416d9f3371200aa6568aec9cdabbc97ba1aedc73fec2ab696889bd43864"

@@ -23,6 +23,8 @@ from babel.numbers import get_currency_symbol, UnknownCurrencyError
 from currency_converter.currency_converter import CurrencyConverter
 from babel import Locale, UnknownLocaleError
 import locale
+from pycbrf import ExchangeRates
+import datetime
 
 
 class BannerFilter(FilterSet):
@@ -191,18 +193,16 @@ class SectionWithVideoView(ModelViewSet):
 @method_decorator(csrf_exempt, name='dispatch')
 class CurrenciesView(View):
     def get(self, request):
-        c = CurrencyConverter()
-        # Получаем список валютных кодов из параметра запроса
         currencies = request.GET.getlist('currencies')
 
         if not currencies:
             currencies = [
-                "USD",
-                "RUB",
-                "EUR",
-                "KZT",
-                "UZS"
-            ]
+                    "USD",
+                    "RUB",
+                    "EUR",
+                    "KZT",
+                    "UZS",
+                ]
 
         currency_data = [
             {
@@ -213,14 +213,25 @@ class CurrenciesView(View):
             }
         ]
 
+        c = ExchangeRates(str(datetime.datetime.now())[:10])
+        # c = ExchangeRates(str(datetime.datetime.now()))
+
+        rub_kor = float(c['KRW'].rate)
         for curr in currencies:
-            if curr == "KRW":
-                continue
+            if curr == "RUB":
+                currency_data.append(
+                    {
+                        'value': curr,
+                        'curr': rub_kor,
+                        'symbol': get_currency_symbol(curr),
+                        'locale': '',
+                    }
+                )
             try:
                 currency_data.append(
                     {
                         'value': curr,
-                        'curr': c.convert(1, 'KRW', curr),
+                        'curr': rub_kor / float(c[curr].rate),
                         'symbol': get_currency_symbol(curr),
                         'locale': '',
                     }
@@ -234,6 +245,40 @@ class CurrenciesView(View):
                         'locale': '',
                     }
                 )
+
+        # Получаем список валютных кодов из параметра запроса
+        #
+        # if not currencies:
+        #     currencies = [
+        #         "USD",
+        #         "RUB",
+        #         "EUR",
+        #         "KZT",
+        #         "UZS"
+        #     ]
+        #
+        #
+        # for curr in currencies:
+        #     if curr == "KRW":
+        #         continue
+        #     try:
+        #         currency_data.append(
+        #             {
+        #                 'value': curr,
+        #                 'curr': c.convert(1, 'KRW', curr),
+        #                 'symbol': get_currency_symbol(curr),
+        #                 'locale': '',
+        #             }
+        #         )
+        #     except Exception as e:
+        #         currency_data.append(
+        #             {
+        #                 'value': curr,
+        #                 'curr': 0,
+        #                 'symbol': '',
+        #                 'locale': '',
+        #             }
+        #         )
 
         return JsonResponse({'currencies': currency_data}, status=200)
 
