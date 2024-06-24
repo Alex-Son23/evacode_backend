@@ -227,6 +227,7 @@ class CurrenciesView(View):
                         'locale': '',
                     }
                 )
+                continue
             try:
                 currency_data.append(
                     {
