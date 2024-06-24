@@ -312,6 +312,17 @@ files = [
 ]
 
 [[package]]
+name = "currency-symbols"
+version = "2.0.3"
+description = "Get currency symbol by currency code"
+optional = false
+python-versions = "*"
+files = [
+    {file = "currency-symbols-2.0.3.tar.gz", hash = "sha256:f6101415319e06674c63d05ed9988b131dd8004cc437e77f7e83e734e5d2eb2f"},
+    {file = "currency_symbols-2.0.3-py3-none-any.whl", hash = "sha256:e71c82320f1b410ab15614f5df6ea3645b204752081689bae30b6331006357f0"},
+]
+
+[[package]]
 name = "currencyconverter"
 version = "0.17.23"
 description = "A currency converter using the European Central Bank data."
@@ -1414,4 +1425,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.3"
-content-hash = "e3283416d9f3371200aa6568aec9cdabbc97ba1aedc73fec2ab696889bd43864"
+content-hash = "cf60b2fefd5676180beac02e5bf78fafd779fca985d2040494fa3ec1a4f2cb85"

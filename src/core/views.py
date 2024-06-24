@@ -20,6 +20,7 @@ from .serializers import RegisterSerializer, UserSerializer, CommentSerializer
 from .models import Comment, Contacts, AboutUs, Banner, Delivery, SectionWithVideo
 from django_filters import FilterSet, CharFilter
 from babel.numbers import get_currency_symbol, UnknownCurrencyError
+from currency_symbols import CurrencySymbols
 from currency_converter.currency_converter import CurrencyConverter
 from babel import Locale, UnknownLocaleError
 import locale
@@ -212,7 +213,6 @@ class CurrenciesView(View):
                 'locale': 'ko-KR',
             }
         ]
-
         c = ExchangeRates(str(datetime.datetime.now())[:10])
         # c = ExchangeRates(str(datetime.datetime.now()))
 
@@ -223,7 +223,7 @@ class CurrenciesView(View):
                     {
                         'value': curr,
                         'curr': rub_kor,
-                        'symbol': get_currency_symbol(curr),
+                        'symbol': CurrencySymbols.get_symbol(curr),
                         'locale': '',
                     }
                 )
@@ -233,7 +233,7 @@ class CurrenciesView(View):
                     {
                         'value': curr,
                         'curr': rub_kor / float(c[curr].rate),
-                        'symbol': get_currency_symbol(curr),
+                        'symbol': CurrencySymbols.get_symbol(curr),
                         'locale': '',
                     }
                 )
