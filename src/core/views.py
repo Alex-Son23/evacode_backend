@@ -207,7 +207,7 @@ class CurrenciesView(View):
                         'value': curr,
                         'curr': c.convert(1, 'KRW', curr),
                         'symbol': get_currency_symbol(curr),
-                        # 'locale': get_currency_locale(curr),
+                        'locale': '',
                     }
                 )
             except Exception as e:
@@ -216,7 +216,7 @@ class CurrenciesView(View):
                         'value': curr,
                         'curr': 0,
                         'symbol': '',
-                        # 'locale': get_currency_locale(curr),
+                        'locale': '',
                     }
                 )
 
