@@ -3,7 +3,7 @@ from rest_framework.viewsets import ModelViewSet
 from django_filters import rest_framework
 from forex_python.converter import CurrencyRates, CurrencyCodes
 from .serializers import PostSerializer, ContactsSerializer, AboutUsSerializer, DeliverySerializer, SlideSerializer, \
-    BannerSerializer, ReviewSerializer
+    BannerSerializer, ReviewSerializer, SectionWithVideoSerializer
 from .models import Post, Slide, Review
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -17,7 +17,7 @@ from taggit.models import Tag
 from rest_framework.views import View, APIView
 from django.core.mail import send_mail
 from .serializers import RegisterSerializer, UserSerializer, CommentSerializer
-from .models import Comment, Contacts, AboutUs, Banner, Delivery
+from .models import Comment, Contacts, AboutUs, Banner, Delivery, SectionWithVideo
 from django_filters import FilterSet, CharFilter
 from babel.numbers import get_currency_symbol, UnknownCurrencyError
 from currency_converter.currency_converter import CurrencyConverter
@@ -38,6 +38,14 @@ class AboutFilter(FilterSet):
 
     class Meta:
         model = AboutUs
+        fields = ['id', 'name']
+
+
+class SectionWithVideoFilter(FilterSet):
+    name = CharFilter(field_name='name', lookup_expr='exact', required=False)
+
+    class Meta:
+        model = SectionWithVideo
         fields = ['id', 'name']
 
 
@@ -171,6 +179,13 @@ class SlideView(ModelViewSet):
 class ReviewView(ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+
+
+class SectionWithVideoView(ModelViewSet):
+    queryset = SectionWithVideo.objects.all()
+    serializer_class = SectionWithVideoSerializer
+    filter_backends = (rest_framework.DjangoFilterBackend,)
+    filterset_class = SectionWithVideoFilter
 
 
 @method_decorator(csrf_exempt, name='dispatch')

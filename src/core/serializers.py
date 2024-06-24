@@ -3,7 +3,7 @@ from .models import Post, Slide, Review
 from taggit.serializers import TagListSerializerField, TaggitSerializer
 from django.contrib.auth.models import User
 from taggit.models import Tag
-from .models import Comment, Banner, AboutUs, Contacts, Delivery
+from .models import Comment, Banner, AboutUs, Contacts, Delivery, SectionWithVideo
 
 
 class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
@@ -112,4 +112,10 @@ class SlideSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
+        fields = '__all__'
+
+
+class SectionWithVideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SectionWithVideo
         fields = '__all__'

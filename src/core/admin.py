@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import Post, Contacts, AboutUs, Banner, Delivery, Slide, Review
+from .models import Post, Contacts, AboutUs, Banner, Delivery, Slide, Review, SectionWithVideo
 
 
 class PostAdmin(admin.ModelAdmin):
@@ -27,6 +27,10 @@ class AboutUsAdmin(admin.ModelAdmin):
 
 
 class ContactsAdmin(admin.ModelAdmin):
+    pass
+
+
+class SectionWithVideoAdmin(admin.ModelAdmin):
     pass
 
 
@@ -61,3 +65,4 @@ admin.site.register(Contacts, ContactsAdmin)
 admin.site.register(Banner, BannerAdmin)
 admin.site.register(Slide, SlideAdmin)
 admin.site.register(Review, ReviewAdmin)
+admin.site.register(SectionWithVideo, SectionWithVideoAdmin)

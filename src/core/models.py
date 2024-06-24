@@ -119,3 +119,14 @@ class Review(models.Model):
     def __str__(self):
         return self.name
 
+
+class SectionWithVideo(models.Model):
+    video_file = models.FileField(verbose_name="Видео", upload_to='videos/')
+    name = models.CharField(verbose_name="Название", max_length=128)
+
+    class Meta:
+        verbose_name = 'Секция с видео'
+        verbose_name_plural = 'Секции с видео'
+
+    def __str__(self):
+        return self.name
