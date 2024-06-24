@@ -17,6 +17,7 @@ from .filters import GoodsFilter
 from django_filters import rest_framework as filters
 from .pagination import CustomPagination, AllObjectPagination
 from .utils import BusinessRuService, BusinessRuAPIClient
+from rest_framework.filters import OrderingFilter
 from rest_framework import generics
 from rest_framework.viewsets import ModelViewSet
 from .models import GoodsModel, GroupOfGoods
@@ -43,8 +44,10 @@ class GoodsAPIView(ModelViewSet):
     queryset = GoodsModel.objects.all().distinct()
     serializer_class = GoodsSerializer
     pagination_class = CustomPagination
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
     filterset_class = GoodsFilter
+    # ordering_fields = ["stock", "retail_price"]
+    ordering = ["-stock"]
 
 
 class GroupListAPIView(generics.ListAPIView):

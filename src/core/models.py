@@ -44,6 +44,9 @@ class Banner(models.Model):
         verbose_name = 'Баннер'
         verbose_name_plural = 'Баннеры'
 
+    def __str__(self):
+        return self.name
+
 
 class AboutUs(models.Model):
     name = models.CharField(verbose_name="Поле для поиска", max_length=128)
@@ -55,6 +58,9 @@ class AboutUs(models.Model):
         verbose_name = 'О нас'
         verbose_name_plural = 'О нас'
 
+    def __str__(self):
+        return self.name
+
 
 class Delivery(models.Model):
     delivery_type = models.CharField(verbose_name="Тип доставки", max_length=128)
@@ -63,6 +69,9 @@ class Delivery(models.Model):
     class Meta:
         verbose_name = 'Доставка'
         verbose_name_plural = 'Доставка'
+
+    def __str__(self):
+        return self.delivery_type
 
 
 class Slide(models.Model):
@@ -73,6 +82,9 @@ class Slide(models.Model):
     class Meta:
         verbose_name = 'Слайд'
         verbose_name_plural = 'Слайды'
+
+    def __str__(self):
+        return self.title
 
 
 class Contacts(models.Model):
@@ -86,6 +98,9 @@ class Contacts(models.Model):
     class Meta:
         verbose_name = 'Контакт'
         verbose_name_plural = 'Контакты'
+
+    def __str__(self):
+        return "Контакты"
 
 
 class Review(models.Model):
