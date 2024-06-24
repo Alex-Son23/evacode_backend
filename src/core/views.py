@@ -1,18 +1,28 @@
 from rest_framework import viewsets, permissions, pagination, generics, filters
 from rest_framework.viewsets import ModelViewSet
 from django_filters import rest_framework
-
-from .serializers import PostSerializer, ContactsSerializer, AboutUsSerializer, DeliverySerializer, SlideSerializer, BannerSerializer, ReviewSerializer
+from forex_python.converter import CurrencyRates, CurrencyCodes
+from .serializers import PostSerializer, ContactsSerializer, AboutUsSerializer, DeliverySerializer, SlideSerializer, \
+    BannerSerializer, ReviewSerializer
 from .models import Post, Slide, Review
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from rest_framework.response import Response
+from rest_framework import status
+from django.http import HttpResponse, JsonResponse
 from taggit.models import Tag
+from babel import Locale, UnknownLocaleError
 from .serializers import TagSerializer, ContactSerailizer
 from taggit.models import Tag
-from rest_framework.views import APIView
+from rest_framework.views import View, APIView
 from django.core.mail import send_mail
 from .serializers import RegisterSerializer, UserSerializer, CommentSerializer
 from .models import Comment, Contacts, AboutUs, Banner, Delivery
 from django_filters import FilterSet, CharFilter
+from babel.numbers import get_currency_symbol, UnknownCurrencyError
+from currency_converter.currency_converter import CurrencyConverter
+from babel import Locale, UnknownLocaleError
+import locale
 
 
 class BannerFilter(FilterSet):
@@ -161,3 +171,54 @@ class SlideView(ModelViewSet):
 class ReviewView(ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CurrenciesView(View):
+    def get(self, request):
+        c = CurrencyConverter()
+        # Получаем список валютных кодов из параметра запроса
+        currencies = request.GET.getlist('currencies')
+
+        if not currencies:
+            currencies = [
+                "USD",
+                "RUB",
+                "EUR",
+                "KZT",
+                "UZS"
+            ]
+
+        currency_data = [
+            {
+                'value': 'KRW',
+                'curr': 1,
+                'symbol': '₩',
+                'locale': 'ko-KR',
+            }
+        ]
+
+        for curr in currencies:
+            if curr == "KRW":
+                continue
+            try:
+                currency_data.append(
+                    {
+                        'value': curr,
+                        'curr': c.convert(1, 'KRW', curr),
+                        'symbol': get_currency_symbol(curr),
+                        # 'locale': get_currency_locale(curr),
+                    }
+                )
+            except Exception as e:
+                currency_data.append(
+                    {
+                        'value': curr,
+                        'curr': 0,
+                        'symbol': '',
+                        # 'locale': get_currency_locale(curr),
+                    }
+                )
+
+        return JsonResponse({'currencies': currency_data}, status=200)
+

@@ -9,7 +9,7 @@ class PostAdmin(admin.ModelAdmin):
 
 
 class DeliveryAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('delivery_type',)
 
 
 class BannerAdmin(admin.ModelAdmin):
@@ -23,14 +23,7 @@ class BannerAdmin(admin.ModelAdmin):
 
 
 class AboutUsAdmin(admin.ModelAdmin):
-    # list_display = ('title', 'description')
-    # readonly_fields = ('get_image',)
-    #
-    # def get_image(self, obj):
-    #     return mark_safe(f'<img src={obj.image.url} width="200">')
-    #
-    # get_image.short_description = "Изображение"
-    pass
+    list_display = ('name',)
 
 
 class ContactsAdmin(admin.ModelAdmin):
