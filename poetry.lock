@@ -961,6 +961,25 @@ files = [
 typing-extensions = ">=4.4"
 
 [[package]]
+name = "py-moneyed"
+version = "3.0"
+description = "Provides Currency and Money classes for use in your Python code."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "py-moneyed-3.0.tar.gz", hash = "sha256:4906f0f02cf2b91edba2e156f2d4e9a78f224059ab8c8fa2ff26230c75d894e8"},
+    {file = "py_moneyed-3.0-py3-none-any.whl", hash = "sha256:9583a14f99c05b46196193d8185206e9b73c8439fc8a5eee9cfc7e733676d9bb"},
+]
+
+[package.dependencies]
+babel = ">=2.8.0"
+typing-extensions = ">=3.7.4.3"
+
+[package.extras]
+tests = ["pytest (>=2.3.0)", "tox (>=1.6.0)"]
+type-tests = ["mypy (>=0.812)", "pytest (>=2.3.0)", "pytest-mypy-plugins"]
+
+[[package]]
 name = "pyjwt"
 version = "2.8.0"
 description = "JSON Web Token implementation in Python"
@@ -1362,4 +1381,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.3"
-content-hash = "acc65253d7ddf6e3b35fbd30e12d793f9eda7ccab01eabac8727b9a1b7f54bb3"
+content-hash = "75c44db9b6a89f854bc55ba471e883a109a66ff33acc9b0234fa5c2f2b98d6f3"

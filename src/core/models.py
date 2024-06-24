@@ -94,6 +94,7 @@ class Contacts(models.Model):
     address = models.CharField(verbose_name="Address", max_length=128)
     phone = models.CharField(verbose_name="Phone", max_length=128)
     email = models.CharField(verbose_name="Email", max_length=128)
+    tiktok = models.CharField(verbose_name="TikTok", max_length=128, null=True)
 
     class Meta:
         verbose_name = 'Контакт'
@@ -107,10 +108,14 @@ class Review(models.Model):
     avatar = models.ImageField(verbose_name="Аватар", upload_to="images/reviews/avatars/")
     name = models.CharField(verbose_name="ФИО", max_length=128)
     rating = models.IntegerField(verbose_name="Рейтинг", validators=[MaxValueValidator(5), MinValueValidator(0)])
-    text = models.TextField(verbose_name="Текст отзыва")
+    text = RichTextUploadingField(verbose_name="Текст отзыва")
     country = models.CharField(verbose_name="Страна", max_length=128)
     review_photo = models.ImageField(verbose_name="Фото", upload_to="images/reviews/photos/")
 
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
+
+    def __str__(self):
+        return self.name
+

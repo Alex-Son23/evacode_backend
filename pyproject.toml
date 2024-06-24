@@ -24,6 +24,7 @@ gunicorn = "^21.2.0"
 drf-yasg = "^1.21.7"
 forex-python = "^1.8"
 currencyconverter = "^0.17.23"
+py-moneyed = "^3.0"
 
 
 [build-system]
