@@ -50,7 +50,7 @@ class Banner(models.Model):
 
 class AboutUs(models.Model):
     name = models.CharField(verbose_name="Поле для поиска", max_length=128)
-    image = models.ImageField(verbose_name="Картинка", upload_to="images/")
+    # image = models.ImageField(verbose_name="Картинка", upload_to="images/")
     title = models.CharField(verbose_name="Название", max_length=128)
     description = RichTextUploadingField()
 
