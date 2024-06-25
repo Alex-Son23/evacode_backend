@@ -193,6 +193,10 @@ class SectionWithVideoView(ModelViewSet):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class CurrenciesView(View):
+
+    # rare_signs = {
+    #     'UZS': "Soʻm"
+    # }
     def get(self, request):
         currencies = request.GET.getlist('currencies')
 
@@ -203,6 +207,7 @@ class CurrenciesView(View):
                     "EUR",
                     "KZT",
                     "UZS",
+                    "KGS"
                 ]
 
         currency_data = [
