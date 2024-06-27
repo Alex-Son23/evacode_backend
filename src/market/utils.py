@@ -24,6 +24,9 @@ class BusinessRuAPIClient:
     base_url = 'https://a46291.business.ru/api/rest'
     token = ''
     app_psw = ''
+    params = {
+        'app_id': app_id
+    }
 
     def __init__(self):
         self.repair_hash = self.get_hash(params={'app_id': self.app_id})
@@ -41,16 +44,20 @@ class BusinessRuAPIClient:
         return hashed
 
     def get_goods_group(self) -> list:
-        params = {'app_id': self.app_id}
-        hashed = self.get_hash(params=params, token=self.token)
+        hashed = self.get_hash(params=self.params, token=self.token)
         response = requests.get(f'{self.base_url}/groupsofgoods.json?app_id={self.app_id}&app_psw={hashed}')
-        # print(response.content)
         data = dict(json.loads(response.content))
-        # pprint(data)
+        return data['result']
+
+    def get_stores(self) -> list:
+        hashed = self.get_hash(params=self.params, token=self.token)
+        response = requests.get(f'{self.base_url}/stores.json?app_id={self.app_id}&app_psw={hashed}')
+        print(response.content)
+        data = dict(json.loads(response.content))
         return data['result']
 
     def get_goods(self, page: int = 1, with_remains: int = 1, filter_positive_free_remains: int = 1,
-                  with_prices: int = 1, filter_positive_remains: int = 1, archive: int = 0) -> list[dict]:
+                  with_prices: int = 1, filter_positive_remains: int = 1, archive: int = 0, store_id: int = 0) -> list[dict]:
         params = {
             'app_id': self.app_id,
             'page': page,
@@ -59,26 +66,14 @@ class BusinessRuAPIClient:
             'filter_positive_free_remains': filter_positive_free_remains,
             'filter_positive_remains': filter_positive_remains,
             'archive': archive,
+            'store_id': store_id
         }
         hashed = self.get_hash(params=params, token=self.token)
+        print(f'{self.base_url}/goods.json?{urlencode(params)}&app_psw={hashed}')
         response = requests.get(f'{self.base_url}/goods.json?{urlencode(params)}&app_psw={hashed}')
         # print(response.content)
         data = dict(json.loads(response.content))
         return data['result']
-
-
-# c = BusinessRuAPIClient()
-# all_prod_rem = []
-# all_prod_free_rem = []
-# for i in range(1, 100):
-#     n = c.get_goods(i)
-#     # print(not n, n)
-#     print(len(n))
-#     if not n:
-#         print(i)
-#         break
-#     all_prod_rem.extend(n)
-# pprint(all_prod_rem[0])
 
 
 class BusinessRuService:
@@ -121,8 +116,15 @@ class BusinessRuService:
 
     def goods_to_model(self):
         page = 1
+        stores = self.api_client.get_stores()
+        kor_store = list(filter(lambda el: 'корея' in el['name'].lower(), stores))[0]
+        store_id = int(kor_store["id"])
+
+        del_goods = GoodsModel.objects.all().delete()
+        print(del_goods)
         while True:
-            goods_data = self.api_client.get_goods(page=page)
+            goods_data = self.api_client.get_goods(page=page, store_id=store_id)
+            # pprint(goods_data)
             if not goods_data:
                 break
             for good in goods_data:
@@ -134,7 +136,6 @@ class BusinessRuService:
                     'type': good['type'],
                     'stock': float(good['remains'][0]['amount']['total'])
                 }
-                # print(good['id'], float(good['remains'][0]['amount']['total']))
 
                 for price in good['prices']:
                     match price['price_type']['name']:
@@ -149,7 +150,6 @@ class BusinessRuService:
                         case _:
                             pass
 
-                # print(defaults)
 
                 obj, created = GoodsModel.objects.update_or_create(id=int(good['id']), defaults=defaults,
                                                                    create_defaults=defaults)
@@ -166,36 +166,5 @@ class BusinessRuService:
                         )
                         if not (isinstance(image_object, tuple)):
                             image_object.save()
-                # print(obj, created)
-                # except:
-                #     pass
             page += 1
-            goods_to_delete = GoodsModel.objects.filter(stock__isnull=True) | GoodsModel.objects.filter(stock=0)
-
-            # Удаляем найденные объекты
-            # pprint(goods_to_delete)
-            goods_to_delete.delete()
         print("Goods added successfully!")
-
-    # def add_images(self, images: list, type_of_model: str) -> None:
-    #
-    #     if images:
-    #         for image in images:
-    #             if type_of_model == 'good':
-    #                 data = {'good_id': image['']}
-    #             image_object = ImageModel.objects.get_or_create(
-    #                 name=image['name'],
-    #                 url=image['url'],
-    #                 sort=image['sort'],
-    #                 good_id=good['id']
-    #             )
-    #             if not (isinstance(image_object, tuple)):
-    #                 image_object.save()
-
-
-
-
-# with open(r'file.json', "w", encoding='utf-8') as out:
-#     mast_point = GoodsSerializer(GoodsModel.objects.all(), many=True).data
-#     data = {'result': mast_point}
-#     out.write(json.dumps(data, ensure_ascii=False))
