@@ -15,5 +15,4 @@ class Command(BaseCommand):
             service.group_to_model()
             service.goods_to_model()
             print("updated successfully")
-            # time.sleep(60 * 5)
-            time.sleep(60 * 1)
+            time.sleep(60 * 5)

@@ -57,7 +57,7 @@ class BusinessRuAPIClient:
         return data['result']
 
     def get_goods(self, page: int = 1, with_remains: int = 1, filter_positive_free_remains: int = 1,
-                  with_prices: int = 1, filter_positive_remains: int = 1, archive: int = 0, store_id: int = 0) -> list[dict]:
+                  with_prices: int = 1, filter_positive_remains: int = 1, archive: int = 0,) -> list[dict]:
         params = {
             'app_id': self.app_id,
             'page': page,
@@ -66,7 +66,6 @@ class BusinessRuAPIClient:
             'filter_positive_free_remains': filter_positive_free_remains,
             'filter_positive_remains': filter_positive_remains,
             'archive': archive,
-            'store_id': store_id
         }
         hashed = self.get_hash(params=params, token=self.token)
         print(f'{self.base_url}/goods.json?{urlencode(params)}&app_psw={hashed}')
@@ -90,18 +89,18 @@ class BusinessRuService:
             datetime_object = datetime.strptime(datestr, '%d.%m.%Y %H:%M:%S')
             updated_aware = make_aware(datetime_object)
             # print(datetime_object, group['updated'])
-            try:
-                g = GroupOfGoods.objects.create(id=int(group['id']),
-                                                default_order=group['default_order'],
-                                                deleted=group['deleted'],
-                                                description=group['description'],
-                                                name=group['name'],
-                                                parent_id_id=group['parent_id'],
-                                                updated=updated_aware)
-                g.save()
-                # updated=group['updated'])
-            except IntegrityError:
-                pass
+            defaults = {
+                'id': int(group['id']),
+                'default_order': group['default_order'],
+                'deleted': group['deleted'],
+                'description': group['description'],
+                'name': group['name'],
+                'parent_id_id': group['parent_id'],
+                'updated': updated_aware
+            }
+            obj, created = GroupOfGoods.objects.update_or_create(id=int(group['id']), defaults=defaults, create_defaults=defaults)
+            if created:
+                obj.save()
             # print(group['images'])
             if group['images']:
                 for image in group['images']:
@@ -116,18 +115,21 @@ class BusinessRuService:
 
     def goods_to_model(self):
         page = 1
-        stores = self.api_client.get_stores()
-        kor_store = list(filter(lambda el: 'корея' in el['name'].lower(), stores))[0]
-        store_id = int(kor_store["id"])
 
         del_goods = GoodsModel.objects.all().delete()
         print(del_goods)
+        # return None
         while True:
-            goods_data = self.api_client.get_goods(page=page, store_id=store_id)
+            goods_data = self.api_client.get_goods(page=page)
             # pprint(goods_data)
             if not goods_data:
                 break
             for good in goods_data:
+                kor_store = list(filter(lambda el: 'корея' in el["store"]["name"].lower(), good['remains']))
+                if not kor_store:
+                    continue
+                elif not(float(kor_store[0]['amount']['total']) > float(kor_store[0]['amount']['reserved'])):
+                    continue
                 defaults = {
                     'id': good['id'],
                     'title': good['full_name'],
@@ -150,11 +152,13 @@ class BusinessRuService:
                         case _:
                             pass
 
+                # obj, created = GoodsModel.objects.update_or_create(id=int(good['id']), defaults=defaults,
+                #                                                    create_defaults=defaults)
 
-                obj, created = GoodsModel.objects.update_or_create(id=int(good['id']), defaults=defaults,
-                                                                   create_defaults=defaults)
-                if created:
-                    obj.save()
+                obj = GoodsModel.objects.create(**defaults)
+
+                # if created:
+                obj.save()
 
                 if good['images']:
                     for image in good['images']:
@@ -166,5 +170,6 @@ class BusinessRuService:
                         )
                         if not (isinstance(image_object, tuple)):
                             image_object.save()
+            # print('HELLOOOO_O_O')
             page += 1
         print("Goods added successfully!")
