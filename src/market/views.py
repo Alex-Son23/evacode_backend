@@ -70,7 +70,7 @@ class Checkout(View):
                     last_order_time = datetime.strptime(orders_data[data['user']['phone']], date_format)
                     diff = datetime.now() - last_order_time
                     if diff.seconds / 3600 < 2:
-                        print("Message not send!")
+                        print(f"Message not send! {diff.seconds / 3600}")
                         return JsonResponse({'message': 'Please wait!'}, status=200)
 
                 orders_data[data['user']['phone']] = datetime.now().strftime(date_format)
