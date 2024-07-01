@@ -1,7 +1,7 @@
 import asyncio
 import json
 from pprint import pprint
-
+from datetime import datetime, timedelta
 import requests
 from asgiref.sync import async_to_sync
 from django.shortcuts import render
@@ -34,7 +34,6 @@ load_dotenv()
 token = os.getenv('BOT_TOKEN')
 chat_id = os.getenv('CHAT_ID')
 
-
 bot = Bot(token=token)
 
 keyboard = types.InlineKeyboardMarkup().add(InlineKeyboardButton(text='Обработано✅', callback_data='handle'))
@@ -61,8 +60,20 @@ class Checkout(View):
     def post(self, request):
         if request.content_type == 'application/json':
             try:
+                date_format = "%d-%m-%Y %H:%M:%S"
                 data = json.loads(request.body)
-                pprint(data)
+
+                with open("orders_list.json", "r") as f:
+                    orders_data = json.load(f)
+
+                if data['user']['phone'] in orders_data:
+                    last_order_time = datetime.strptime(orders_data[data['user']['phone']], date_format)
+                    diff = datetime.now() - last_order_time
+                    if diff.seconds / 3600 < 2:
+                        print("Message not send!")
+                        return JsonResponse({'message': 'Please wait!'}, status=200)
+                else:
+                    orders_data[data['user']['phone']] = datetime.now().strftime(date_format)
 
                 message_text = 'ЗАКАЗ С САЙТА:\n'
                 if data['consult']:
@@ -75,6 +86,10 @@ class Checkout(View):
                                     f'Номер: {data["user"]["phone"]}\n'
 
                     n = async_to_sync(bot.send_message)(chat_id=chat_id, text=message_text, reply_markup=keyboard)
+                print("Message send!")
+                with open('orders_list.json', 'w') as f:
+                    json.dump(orders_data, f)
+
                 return JsonResponse({'message': 'DONE!'}, status=200)
             except json.JSONDecodeError:
                 return JsonResponse({'error': 'Некорректный формат JSON'}, status=400)
