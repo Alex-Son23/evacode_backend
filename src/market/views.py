@@ -72,8 +72,8 @@ class Checkout(View):
                     if diff.seconds / 3600 < 2:
                         print("Message not send!")
                         return JsonResponse({'message': 'Please wait!'}, status=200)
-                else:
-                    orders_data[data['user']['phone']] = datetime.now().strftime(date_format)
+
+                orders_data[data['user']['phone']] = datetime.now().strftime(date_format)
 
                 message_text = 'ЗАКАЗ С САЙТА:\n'
                 if data['consult']:
