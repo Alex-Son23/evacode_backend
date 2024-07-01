@@ -45,8 +45,8 @@ class GoodsAPIView(ModelViewSet):
     pagination_class = CustomPagination
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
     filterset_class = GoodsFilter
-    # ordering_fields = ["stock", "retail_price"]
-    ordering = ["-stock"]
+    ordering_fields = ["stock", "bestseller"]
+    ordering = ["-bestseller", '-stock']
 
 
 class GroupListAPIView(generics.ListAPIView):

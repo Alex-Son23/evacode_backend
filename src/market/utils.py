@@ -57,7 +57,7 @@ class BusinessRuAPIClient:
         return data['result']
 
     def get_goods(self, page: int = 1, with_remains: int = 1, filter_positive_free_remains: int = 1,
-                  with_prices: int = 1, filter_positive_remains: int = 1, archive: int = 0,) -> list[dict]:
+                  with_prices: int = 1, filter_positive_remains: int = 1, archive: int = 0, with_attributes: int = 1) -> list[dict]:
         params = {
             'app_id': self.app_id,
             'page': page,
@@ -66,6 +66,7 @@ class BusinessRuAPIClient:
             'filter_positive_free_remains': filter_positive_free_remains,
             'filter_positive_remains': filter_positive_remains,
             'archive': archive,
+            'with_attributes': with_attributes
         }
         hashed = self.get_hash(params=params, token=self.token)
         print(f'{self.base_url}/goods.json?{urlencode(params)}&app_psw={hashed}')
@@ -98,7 +99,8 @@ class BusinessRuService:
                 'parent_id_id': group['parent_id'],
                 'updated': updated_aware
             }
-            obj, created = GroupOfGoods.objects.update_or_create(id=int(group['id']), defaults=defaults, create_defaults=defaults)
+            obj, created = GroupOfGoods.objects.update_or_create(id=int(group['id']), defaults=defaults,
+                                                                 create_defaults=defaults)
             if created:
                 obj.save()
             # print(group['images'])
@@ -128,7 +130,7 @@ class BusinessRuService:
                 kor_store = list(filter(lambda el: 'корея' in el["store"]["name"].lower(), good['remains']))
                 if not kor_store:
                     continue
-                elif not(float(kor_store[0]['amount']['total']) > float(kor_store[0]['amount']['reserved'])):
+                elif not (float(kor_store[0]['amount']['total']) > float(kor_store[0]['amount']['reserved'])):
                     continue
                 defaults = {
                     'id': good['id'],
@@ -136,7 +138,8 @@ class BusinessRuService:
                     'description': good['description'],
                     'category_id': good['group_id'],
                     'type': good['type'],
-                    'stock': float(good['remains'][0]['amount']['total'])
+                    'stock': float(good['remains'][0]['amount']['total']),
+                    'bestseller': self.get_bestseller_value(good['attributes'])
                 }
 
                 for price in good['prices']:
@@ -173,3 +176,11 @@ class BusinessRuService:
             # print('HELLOOOO_O_O')
             page += 1
         print("Goods added successfully!")
+
+    def get_bestseller_value(self, attrs: list) -> int:
+        for attr in attrs:
+            if attr['attribute'].get('name').lower() == 'bestseller':
+                print(attr['value'].get('name', 0))
+                if attr['value'].get('name', 0).lower() == 'да':
+                    return 1
+        return 0
