@@ -4,7 +4,7 @@ from django_filters import rest_framework
 from forex_python.converter import CurrencyRates, CurrencyCodes
 from .serializers import PostSerializer, ContactsSerializer, AboutUsSerializer, DeliverySerializer, SlideSerializer, \
     BannerSerializer, ReviewSerializer, SectionWithVideoSerializer
-from .models import Post, Slide, Review
+from .models import Post, Slide, Review, Currency
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from rest_framework.response import Response
@@ -200,6 +200,7 @@ class CurrenciesView(View):
     def get(self, request):
         currencies = request.GET.getlist('currencies')
 
+
         if not currencies:
             currencies = [
                     "USD",
@@ -221,7 +222,7 @@ class CurrenciesView(View):
         c = ExchangeRates(str(datetime.datetime.now())[:10])
         # c = ExchangeRates(str(datetime.datetime.now()))
 
-        rub_kor = float(c['KRW'].rate)
+        rub_kor = float(Currency.objects.get(key='krw-rub-kzt').value)
         for curr in currencies:
             if curr == "RUB":
                 currency_data.append(
@@ -229,11 +230,16 @@ class CurrenciesView(View):
                         'value': curr,
                         'curr': rub_kor,
                         'symbol': CurrencySymbols.get_symbol(curr),
-                        'locale': '',
+                        'locale': 'ru',
                     }
                 )
                 continue
             try:
+                if curr in ('USD', 'EUR'):
+                    rub_kor = float(Currency.objects.get(key='krw-rub-eur').value)
+                else:
+                    rub_kor = float(Currency.objects.get(key='krw-rub-kzt').value)
+                print(rub_kor, float(c[curr].rate))
                 currency_data.append(
                     {
                         'value': curr,
@@ -243,6 +249,7 @@ class CurrenciesView(View):
                     }
                 )
             except Exception as e:
+                print(e)
                 currency_data.append(
                     {
                         'value': curr,

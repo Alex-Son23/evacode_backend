@@ -130,3 +130,16 @@ class SectionWithVideo(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Currency(models.Model):
+    name = models.CharField(max_length=128, verbose_name='Название курса')
+    value = models.DecimalField(verbose_name="Курс валюты", max_digits=10, decimal_places=4)
+    key = models.CharField(max_length=128, verbose_name='Ключ')
+
+    class Meta:
+        verbose_name = 'Курсы валюты'
+        verbose_name_plural = 'Курсы валют'
+
+    def __str__(self):
+        return f'{self.name} - {self.value}'

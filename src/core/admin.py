@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import Post, Contacts, AboutUs, Banner, Delivery, Slide, Review, SectionWithVideo
+from .models import Post, Contacts, AboutUs, Banner, Delivery, Slide, Review, SectionWithVideo, Currency
 
 
 class PostAdmin(admin.ModelAdmin):
@@ -58,11 +58,22 @@ class ReviewAdmin(admin.ModelAdmin):
     get_photo.short_description = "Фото отзыва"
 
 
+class CurrencyAdmin(admin.ModelAdmin):
+    list_display = ('name', 'value')
+    actions = None
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False
+
+
 admin.site.register(Delivery, DeliveryAdmin)
 # admin.site.register(Post, PostAdmin)
 admin.site.register(AboutUs, AboutUsAdmin)
 admin.site.register(Contacts, ContactsAdmin)
-# admin.site.register(Banner, BannerAdmin)
+admin.site.register(Currency, CurrencyAdmin)
 # admin.site.register(Slide, SlideAdmin)
 admin.site.register(Review, ReviewAdmin)
 # admin.site.register(SectionWithVideo, SectionWithVideoAdmin)
