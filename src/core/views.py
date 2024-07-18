@@ -200,16 +200,15 @@ class CurrenciesView(View):
     def get(self, request):
         currencies = request.GET.getlist('currencies')
 
-
         if not currencies:
             currencies = [
-                    "USD",
-                    "RUB",
-                    "EUR",
-                    "KZT",
-                    "UZS",
-                    "KGS"
-                ]
+                "USD",
+                "RUB",
+                "EUR",
+                "KZT",
+                "UZS",
+                "KGS"
+            ]
 
         currency_data = [
             {
@@ -220,11 +219,10 @@ class CurrenciesView(View):
             }
         ]
         c = ExchangeRates(str(datetime.datetime.now())[:10])
-        # c = ExchangeRates(str(datetime.datetime.now()))
 
-        rub_kor = float(Currency.objects.get(key='krw-rub-kzt').value)
         for curr in currencies:
             if curr == "RUB":
+                rub_kor = 1 / float(Currency.objects.get(key='krw-rub-kzt').value)
                 currency_data.append(
                     {
                         'value': curr,
@@ -236,9 +234,9 @@ class CurrenciesView(View):
                 continue
             try:
                 if curr in ('USD', 'EUR'):
-                    rub_kor = float(Currency.objects.get(key='krw-rub-eur').value)
+                    rub_kor = 1 / float(Currency.objects.get(key='krw-rub-eur').value)
                 else:
-                    rub_kor = float(Currency.objects.get(key='krw-rub-kzt').value)
+                    rub_kor = 1 / float(Currency.objects.get(key='krw-rub-kzt').value)
                 print(rub_kor, float(c[curr].rate))
                 currency_data.append(
                     {
@@ -259,39 +257,4 @@ class CurrenciesView(View):
                     }
                 )
 
-        # Получаем список валютных кодов из параметра запроса
-        #
-        # if not currencies:
-        #     currencies = [
-        #         "USD",
-        #         "RUB",
-        #         "EUR",
-        #         "KZT",
-        #         "UZS"
-        #     ]
-        #
-        #
-        # for curr in currencies:
-        #     if curr == "KRW":
-        #         continue
-        #     try:
-        #         currency_data.append(
-        #             {
-        #                 'value': curr,
-        #                 'curr': c.convert(1, 'KRW', curr),
-        #                 'symbol': get_currency_symbol(curr),
-        #                 'locale': '',
-        #             }
-        #         )
-        #     except Exception as e:
-        #         currency_data.append(
-        #             {
-        #                 'value': curr,
-        #                 'curr': 0,
-        #                 'symbol': '',
-        #                 'locale': '',
-        #             }
-        #         )
-
         return JsonResponse({'currencies': currency_data}, status=200)
-
