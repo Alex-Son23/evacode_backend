@@ -97,6 +97,26 @@ class InvoiceTossPayments(models.Model):
     order_id = models.CharField(max_length=64, verbose_name="Order ID", blank=True)
     manager_link = models.CharField(max_length=128, verbose_name="Ссылка на контакт менеджера", null=True, blank=True)
 
+    def _build_toss_payload(self, order_id, success_url, fail_url):
+        payload = {
+            "method": self.payment_type,
+            "amount": int(self.amount),
+            "orderId": order_id,
+            "orderName": (self.description or "Invoice")[:100],
+            "successUrl": success_url,
+            "failUrl": fail_url,
+        }
+
+        if self.payment_type == self.PaymentType.CARD:
+            return payload
+
+        if self.payment_type == self.PaymentType.FOREIGN:
+            payload["provider"] = "PAYPAL"
+            payload["currency"] = "USD"
+            return payload
+
+        raise ValueError(f"Unsupported TOSS payment type: {self.payment_type}")
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         request_suffix = uuid.uuid4().hex[:8]
@@ -117,17 +137,11 @@ class InvoiceTossPayments(models.Model):
         if self.payment_link:
             return
 
-
-        payload = {
-            "method": "CARD",
-            # "provider": "PAYPAL",
-            "amount": int(self.amount),
-            "orderId": order_id,
-            "orderName": (self.description or "Invoice")[:100],
-            "successUrl": success_url,
-            "failUrl": fail_url,
-            # "currency": "USD",
-        }
+        payload = self._build_toss_payload(
+            order_id=order_id,
+            success_url=success_url,
+            fail_url=fail_url,
+        )
 
         headers = {
             "Accept-Language": "en-US",
