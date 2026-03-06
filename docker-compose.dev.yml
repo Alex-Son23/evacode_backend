@@ -16,6 +16,7 @@ services:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile.dev
+    working_dir: /evacode/src
     command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py createsuperuser --noinput & python manage.py create_currency & python manage.py runserver 0.0.0.0:8000"
     ports:
       - 8000:8000
@@ -32,6 +33,7 @@ services:
       context: .
 #      network: host
       dockerfile: dockerfiles/Dockerfile.dev
+    working_dir: /evacode/src
     command: python manage.py updatedata
     restart: always
     volumes:

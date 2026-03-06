@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG_MODE").lower() == 'true'
+DEBUG = os.getenv("DJANGO_DEBUG_MODE", "false").lower() == 'true'
 # print(bool(os.getenv("DJANGO_DEBUG_MODE")), type(os.getenv("DJANGO_DEBUG_MODE")))
 
 ALLOWED_HOSTS = [
@@ -91,6 +95,7 @@ INSTALLED_APPS = [
     "django_filters",
     "core",
     "market",
+    "finance",
     "ckeditor",
     "ckeditor_uploader",
     "taggit",
@@ -310,3 +315,9 @@ CSRF_TRUSTED_ORIGINS = [
     "https://www.evacode.org",
     "https://79.174.95.27"
 ]
+
+YOOKASSA_API_TOKEN = os.getenv("YOOKASSA_API_TOKEN")
+YOOKASSA_SHOP_ID = os.getenv("YOOKASSA_SHOP_ID")
+
+TOSS_SECRET_KEY = os.getenv("TOSS_SECRET_KEY")
+BACKEND_PUBLIC_URL = os.getenv("BACKEND_PUBLIC_URL", " Evacode.org")

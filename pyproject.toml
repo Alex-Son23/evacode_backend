@@ -27,6 +27,8 @@ currencyconverter = "^0.17.23"
 py-moneyed = "^3.0"
 pycbrf = "^1.1.0"
 currency-symbols = "^2.0.3"
+setuptools = "^80.10.2"
+yookassa = "^3.10.0"
 
 
 [build-system]
