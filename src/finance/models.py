@@ -111,17 +111,18 @@ class InvoiceTossPayments(models.Model):
 
         if self.payment_type == self.PaymentType.CARD:
             self.payload = str(payload)
+            self.save()
             return payload
 
         if self.payment_type == self.PaymentType.FOREIGN:
             payload["provider"] = "PAYPAL"
             payload["currency"] = "USD"
             self.payload = str(payload)
+            self.save()
             return payload
 
         print(payload)
         
-        self.save()
 
         raise ValueError(f"Unsupported TOSS payment type: {self.payment_type}")
 
