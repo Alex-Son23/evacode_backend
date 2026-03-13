@@ -116,6 +116,8 @@ class InvoiceTossPayments(models.Model):
             payload["currency"] = "USD"
             return payload
 
+        print(payload)
+
         raise ValueError(f"Unsupported TOSS payment type: {self.payment_type}")
 
     def save(self, *args, **kwargs):
