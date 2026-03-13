@@ -120,6 +120,7 @@ class InvoiceTossPayments(models.Model):
         print(payload)
         
         self.payload = str(payload)
+        self.save()
 
         raise ValueError(f"Unsupported TOSS payment type: {self.payment_type}")
 
