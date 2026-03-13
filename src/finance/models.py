@@ -168,7 +168,7 @@ class InvoiceTossPayments(models.Model):
         self.payment_link = data["checkout"]["url"]
         self.order_id = order_id
 
-        super().save(update_fields=["payment_id", "status", "payment_link", "updated_at", "order_id"])
+        super().save(update_fields=["payment_id", "status", "payment_link", "updated_at", "order_id", "payload"])
         
         # super().save(*args, **kwargs)
     # def save(self, *args, **kwargs):
