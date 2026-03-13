@@ -105,6 +105,7 @@ class InvoiceTossPayments(models.Model):
             "orderName": (self.description or "Invoice")[:100],
             "successUrl": success_url,
             "failUrl": fail_url,
+            "currency": "USD"
         }
 
         if self.payment_type == self.PaymentType.CARD:
