@@ -1,11 +1,22 @@
+import time
+from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
 
 import requests
 from django.conf import settings
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import render
+from django.utils import timezone
 from requests.auth import HTTPBasicAuth
 from finance.models import InvoiceTossPayments
+
+
+CONFIRM_RETRYABLE_ERROR_CODES = {
+    "FAILED_PAYMENT_INTERNAL_SYSTEM_PROCESSING",
+    "NOT_FOUND_PAYMENT_TO_CONFIRM",
+}
+CONFIRM_RETRY_ATTEMPTS = 3
+CONFIRM_RETRY_DELAY_SECONDS = 1
 
 
 def _default_home_url():
@@ -36,6 +47,73 @@ def _normalize_amount(raw_amount, invoice):
     return float(decimal_amount)
 
 
+def _fetch_payment(payment_key):
+    if not payment_key:
+        return None, None
+
+    try:
+        response = requests.get(
+            url=f"https://api.tosspayments.com/v1/payments/{payment_key}",
+            auth=HTTPBasicAuth(settings.TOSS_SECRET_KEY, ""),
+            timeout=20,
+        )
+    except requests.RequestException as exc:
+        return None, ("PAYMENT_LOOKUP_ERROR", f"Не удалось получить статус платежа: {exc}")
+
+    if not response.ok:
+        return None, _parse_error(response)
+
+    try:
+        return response.json(), None
+    except ValueError:
+        return None, ("INVALID_PAYMENT_LOOKUP_RESPONSE", "Платёжный шлюз вернул некорректный ответ при запросе статуса.")
+
+
+def _parse_payment_datetime(raw_value):
+    if not raw_value:
+        return None
+
+    try:
+        return datetime.fromisoformat(raw_value)
+    except ValueError:
+        return None
+
+
+def _confirmation_window_expired(payment_data):
+    requested_at = _parse_payment_datetime(payment_data.get("requestedAt"))
+    if requested_at is None:
+        return False
+
+    return timezone.now() - requested_at > timedelta(minutes=10)
+
+
+def _sync_invoice_from_payment(invoice, payment_key, payment_data):
+    status = payment_data.get("status", invoice.status)
+    invoice.payment_id = payment_data.get("paymentKey", payment_key)
+    invoice.status = status
+    invoice.is_paid = status == "DONE"
+    invoice.save(update_fields=["payment_id", "status", "is_paid", "updated_at"])
+
+
+def _build_confirm_error_message(default_message, payment_data):
+    if not payment_data:
+        return default_message
+
+    status = payment_data.get("status")
+    if status == "DONE":
+        return "Платёж уже подтверждён в Toss Payments."
+    if status == "READY":
+        return "Покупатель ещё не завершил оплату в платёжном окне."
+    if status == "EXPIRED":
+        return "Время подтверждения платежа истекло. Нужно создать новый счёт и оплатить его заново."
+    if status == "IN_PROGRESS":
+        if _confirmation_window_expired(payment_data):
+            return "Платёж авторизован, но 10-минутное окно подтверждения уже истекло. Нужно создать новый счёт и оплатить его заново."
+        return "Платёж ещё обрабатывается в Toss Payments. Повторите подтверждение через несколько секунд."
+
+    return f"{default_message} Текущий статус платежа в Toss Payments: {status or 'UNKNOWN'}."
+
+
 def _render_failed(request, invoice, order_id, code, message):
     context = {
         "home_url": _default_home_url(),
@@ -51,12 +129,13 @@ def confirm_payment(request, invoice_order_id):
     if request.method != "GET":
         return HttpResponseNotAllowed(["GET"])
 
-    invoice = InvoiceTossPayments.objects.filter(order_id=invoice_order_id).first()
+    order_id = request.GET.get("orderId") or invoice_order_id
+    invoice = InvoiceTossPayments.objects.filter(order_id=order_id).first()
     if not invoice:
         return _render_failed(
             request=request,
             invoice=None,
-            order_id=invoice_order_id,
+            order_id=order_id,
             code="INVOICE_NOT_FOUND",
             message="Инвойс для подтверждения не найден.",
         )
@@ -68,23 +147,34 @@ def confirm_payment(request, invoice_order_id):
         return _render_failed(
             request=request,
             invoice=invoice,
-            order_id=invoice_order_id,
+            order_id=order_id,
             code="MISSING_CONFIRM_PARAMS",
             message="Не хватает параметров paymentKey или amount для подтверждения оплаты.",
         )
 
     if not (invoice.is_paid and invoice.status == "DONE"):
         try:
-            response = requests.post(
-                url="https://api.tosspayments.com/v1/payments/confirm",
-                json={
-                    "paymentKey": payment_key,
-                    "orderId": invoice_order_id,
-                    "amount": confirm_amount,
-                },
-                auth=HTTPBasicAuth(settings.TOSS_SECRET_KEY, ""),
-                timeout=20,
-            )
+            response = None
+            for attempt in range(CONFIRM_RETRY_ATTEMPTS):
+                response = requests.post(
+                    url="https://api.tosspayments.com/v1/payments/confirm",
+                    json={
+                        "paymentKey": payment_key,
+                        "orderId": order_id,
+                        "amount": confirm_amount,
+                    },
+                    auth=HTTPBasicAuth(settings.TOSS_SECRET_KEY, ""),
+                    timeout=20,
+                )
+
+                if response.ok:
+                    break
+
+                error_code, _ = _parse_error(response)
+                if error_code not in CONFIRM_RETRYABLE_ERROR_CODES or attempt == CONFIRM_RETRY_ATTEMPTS - 1:
+                    break
+
+                time.sleep(CONFIRM_RETRY_DELAY_SECONDS)
         except requests.RequestException as exc:
             invoice.status = "FAILED"
             invoice.is_paid = False
@@ -92,7 +182,7 @@ def confirm_payment(request, invoice_order_id):
             return _render_failed(
                 request=request,
                 invoice=invoice,
-                order_id=invoice_order_id,
+                order_id=order_id,
                 code="CONFIRM_REQUEST_ERROR",
                 message=f"Ошибка запроса к платёжному шлюзу: {exc}",
             )
@@ -100,18 +190,40 @@ def confirm_payment(request, invoice_order_id):
         if not response.ok:
             error_code, error_message = _parse_error(response)
             if error_code == "ALREADY_PROCESSED_PAYMENT":
-                invoice.payment_id = payment_key
-                invoice.status = "DONE"
-                invoice.is_paid = True
-                invoice.save(update_fields=["payment_id", "status", "is_paid", "updated_at"])
+                payment_data, _ = _fetch_payment(payment_key)
+                if payment_data:
+                    _sync_invoice_from_payment(invoice, payment_key, payment_data)
+                else:
+                    invoice.payment_id = payment_key
+                    invoice.status = "DONE"
+                    invoice.is_paid = True
+                    invoice.save(update_fields=["payment_id", "status", "is_paid", "updated_at"])
             else:
-                invoice.status = "FAILED"
-                invoice.is_paid = False
-                invoice.save(update_fields=["status", "is_paid", "updated_at"])
+                payment_data, lookup_error = _fetch_payment(payment_key)
+                if payment_data:
+                    _sync_invoice_from_payment(invoice, payment_key, payment_data)
+                    if invoice.is_paid:
+                        context = {
+                            "home_url": _default_home_url(),
+                            "invoice": invoice,
+                            "order_id": order_id,
+                            "payment_key": invoice.payment_id,
+                            "amount": request.GET.get("amount") or invoice.amount,
+                        }
+                        return render(request, "finance/payment_success.html", context)
+
+                    error_message = _build_confirm_error_message(error_message, payment_data)
+                else:
+                    invoice.status = "FAILED"
+                    invoice.is_paid = False
+                    invoice.save(update_fields=["status", "is_paid", "updated_at"])
+                    if lookup_error:
+                        error_message = f"{error_message} Не удалось уточнить статус платежа: {lookup_error[1]}"
+
                 return _render_failed(
                     request=request,
                     invoice=invoice,
-                    order_id=invoice_order_id,
+                    order_id=order_id,
                     code=error_code,
                     message=error_message,
                 )
@@ -125,7 +237,7 @@ def confirm_payment(request, invoice_order_id):
     context = {
         "home_url": _default_home_url(),
         "invoice": invoice,
-        "order_id": invoice_order_id,
+        "order_id": order_id,
         "payment_key": payment_key,
         "amount": request.GET.get("amount") or invoice.amount,
     }

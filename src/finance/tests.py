@@ -1,8 +1,12 @@
 from decimal import Decimal
+from datetime import datetime
+from zoneinfo import ZoneInfo
+from unittest.mock import patch
 
 from django.test import SimpleTestCase
 
 from finance.models import InvoiceTossPayments
+from finance.views import _build_confirm_error_message, _confirmation_window_expired
 
 
 class InvoiceTossPaymentsPayloadTests(SimpleTestCase):
@@ -53,3 +57,30 @@ class InvoiceTossPaymentsPayloadTests(SimpleTestCase):
                 success_url="https://example.com/success",
                 fail_url="https://example.com/fail",
             )
+
+
+class ConfirmPaymentHelpersTests(SimpleTestCase):
+    def test_confirmation_window_expired_after_ten_minutes(self):
+        payment_data = {"requestedAt": "2026-03-18T22:19:43+09:00"}
+        mocked_now = datetime(2026, 3, 18, 17, 2, 36, tzinfo=ZoneInfo("Europe/Moscow"))
+
+        with patch("finance.views.timezone.now", return_value=mocked_now):
+            self.assertTrue(_confirmation_window_expired(payment_data))
+
+    def test_build_confirm_error_message_for_expired_in_progress_payment(self):
+        payment_data = {"status": "IN_PROGRESS", "requestedAt": "2026-03-18T22:19:43+09:00"}
+        mocked_now = datetime(2026, 3, 18, 17, 2, 36, tzinfo=ZoneInfo("Europe/Moscow"))
+
+        with patch("finance.views.timezone.now", return_value=mocked_now):
+            message = _build_confirm_error_message("Base error", payment_data)
+
+        self.assertIn("10-минутное окно подтверждения уже истекло", message)
+
+    def test_build_confirm_error_message_for_fresh_in_progress_payment(self):
+        payment_data = {"status": "IN_PROGRESS", "requestedAt": "2026-03-18T22:19:43+09:00"}
+        mocked_now = datetime(2026, 3, 18, 16, 21, 0, tzinfo=ZoneInfo("Europe/Moscow"))
+
+        with patch("finance.views.timezone.now", return_value=mocked_now):
+            message = _build_confirm_error_message("Base error", payment_data)
+
+        self.assertIn("Повторите подтверждение через несколько секунд", message)
